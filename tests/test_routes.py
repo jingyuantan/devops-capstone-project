@@ -165,3 +165,33 @@ class TestAccountService(TestCase):
         # assert that the resp.status_code is status.HTTP_404_NOT_FOUND
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
+    def test_update_account(self):
+        """It should Update an existing Account"""
+        # create an Account to update
+
+        test_account = AccountFactory()
+        # send a self.client.post() request to the BASE_URL with a json payload of test_account.serialize()
+        resp = self.client.post(BASE_URL, json=test_account.serialize())
+        
+        # assert that the resp.status_code is status.HTTP_201_CREATED
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+
+        # update the account
+        # get the data from resp.get_json() as new_account
+        new_account = resp.get_json()
+
+        # change new_account["name"] to something known
+        new_account["name"] = "Something Known"
+
+        # send a self.client.put() request to the BASE_URL with a json payload of new_account
+        resp = self.client.put(f"{BASE_URL}/{new_account['id']}", json=new_account)
+        
+        # assert that the resp.status_code is status.HTTP_200_OK
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        
+        # get the data from resp.get_json() as updated_account
+        updated_account = resp.get_json()
+
+        # assert that the updated_account["name"] is whatever you changed it to
+        self.assertEqual(updated_account["name"], "Something Known")
+
